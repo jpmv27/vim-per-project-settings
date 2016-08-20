@@ -1,9 +1,8 @@
 function pps#apply_settings(project) abort
-    if !pps#utils#set_project_dir(a:project)
-        return
-    endif
+    let activate = pps#utils#set_project_dir(a:project)
 
-    call pps#vimrc#apply()
-    call pps#tags#configure()
+    call pps#vimrc#configure(activate)
+    call pps#tags#configure(activate)
+    call pps#spell#configure(activate)
 endfunction
 

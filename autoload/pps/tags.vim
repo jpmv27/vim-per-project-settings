@@ -12,10 +12,18 @@ function s:ctags_cmd_base() abort
     return cmd
 endfunction
 
-function pps#tags#configure() abort
-    let tags = s:tags_file_path()
+function pps#tags#configure(activate) abort
+    let activate = a:activate
 
-    if filereadable(tags)
+    if activate
+        let tags = s:tags_file_path()
+
+        if !filereadable(tags)
+            let activate = 0
+        endif
+    endif
+
+    if activate
         let b:pps_tags_file = tags
         execute 'setlocal tags=' . tags
 
@@ -45,7 +53,7 @@ function pps#tags#update() abort
     let log = system(cmd)
     if v:shell_error == 0
         echo 'Tags file updated'
-        call pps#tags#configure()
+        call pps#tags#configure(1)
     else
         echo 'Updating failed with exit status' v:shell_error
         echo cmd
