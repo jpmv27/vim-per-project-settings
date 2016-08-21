@@ -1,5 +1,23 @@
 function s:tags_file_path() abort
-    return b:pps_project_dir . '/tags'
+    let dir = pps#utils#get_project_dir()
+    if dir ==# ''
+        return ''
+    endif
+
+    return dir . '/tags'
+endfunction
+
+function s:run_command(command)
+    let log = system(a:command)
+    if v:shell_error == 0
+        echo 'Tags file updated'
+        return 1
+    else
+        echo 'Updating failed with exit status' v:shell_error
+        echo a:command
+        echo log
+        return 0
+    endif
 endfunction
 
 function s:ctags_cmd_base() abort
@@ -12,19 +30,18 @@ function s:ctags_cmd_base() abort
     return cmd
 endfunction
 
-function pps#tags#configure(activate) abort
-    let activate = a:activate
+function pps#tags#configure(active) abort
+    let active = a:active
 
-    if activate
+    if active
         let tags = s:tags_file_path()
 
-        if !filereadable(tags)
-            let activate = 0
+        if (tags ==# '') || !filereadable(tags)
+            let active = 0
         endif
     endif
 
-    if activate
-        let b:pps_tags_file = tags
+    if active
         execute 'setlocal tags=' . tags
 
         augroup pps_tags
@@ -32,41 +49,43 @@ function pps#tags#configure(activate) abort
             autocmd BufWritePost *.cpp,*.h,*.c call pps#tags#update_one()
         augroup END
     else
-        if exists('b:pps_tags_file')
-            unlet b:pps_tags_file
-        endif
+        setlocal tags=
     endif
 endfunction
 
 function pps#tags#update() abort
-    if !exists('b:pps_project_dir')
-        echo 'No project directory'
+    let dir = pps#utils#get_project_dir()
+    if dir ==# ''
         return
     endif
 
-    let cmd = s:ctags_cmd_base() . '-f ' . s:tags_file_path() . ' '
+    if !isdirectory(dir)
+        echo 'You must create the project directory first'
+        return
+    endif
+
+    let tags = s:tags_file_path()
+    if tags ==# ''
+        return
+    endif
+
+    let cmd = s:ctags_cmd_base() . '-f ' . tags . ' '
 
     for d in get(b:, 'pps_tags_subdirs', [''])
         let cmd .= simplify(fnameescape(getcwd() . '/' . d) . '/*') . ' '
     endfor
 
-    let log = system(cmd)
-    if v:shell_error == 0
-        echo 'Tags file updated'
+    if s:run_command(cmd)
         call pps#tags#configure(1)
-    else
-        echo 'Updating failed with exit status' v:shell_error
-        echo cmd
-        echo log
     endif
 endfunction
 
 function pps#tags#update_one() abort
-    if !exists('b:pps_tags_file')
+    let tags = s:tags_file_path()
+    if (tags ==# '') || !filereadable(tags)
         return
     endif
 
-    let tags = b:pps_tags_file
     let temp = tags . '.tmp'
 
     let file = resolve(fnameescape(expand('%:p')))
@@ -75,7 +94,7 @@ function pps#tags#update_one() abort
     let matched = 0
     for d in get(b:, 'pps_tags_subdirs', [''])
         let ppath = resolve(fnameescape(getcwd() . '/' . d))
-        if (path == ppath)
+        if (path ==# ppath)
             let matched = 1
         endif
     endfor
@@ -88,13 +107,6 @@ function pps#tags#update_one() abort
     let cmd .= '; ' . s:ctags_cmd_base() . '-a -f ' . temp . ' ' . file
     let cmd .= '; mv ' . temp . ' ' . tags
 
-    let log = system(cmd)
-    if v:shell_error == 0
-        echo 'Tags file updated'
-    else
-        echo 'Updating failed with exit status' v:shell_error
-        echo cmd
-        echo log
-    endif
+    call s:run_command(cmd)
 endfunction
 

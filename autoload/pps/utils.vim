@@ -1,20 +1,37 @@
-function pps#utils#set_project_dir(project) abort
-    if !exists('g:pps_base_dir')
-        echo 'You must define g:pps_base_dir'
-        return 0
+function pps#utils#get_project_dir() abort
+    if !exists('b:pps_project_name')
+        echo 'Not in a project'
+        return ''
     endif
 
-    let dir = resolve(fnameescape(expand(g:pps_base_dir) . '/' . a:project))
+    if !exists('g:pps_base_dir')
+        echo 'You must define g:pps_base_dir'
+        return ''
+    endif
 
-    if isdirectory(dir)
-        let b:pps_project_dir = dir
-        return 1
+    return resolve(fnameescape(expand(g:pps_base_dir) . '/' . b:pps_project_name))
+endfunction
+
+function pps#utils#apply_settings() abort
+    let active = (pps#utils#get_project_dir() !=# '')
+
+    call pps#vimrc#configure(active)
+    call pps#tags#configure(active)
+    call pps#spell#configure(active)
+endfunction
+
+function pps#utils#make_project_dir() abort
+    let dir = pps#utils#get_project_dir() 
+    if dir ==# ''
+        return
+    endif
+
+    if !isdirectory(dir)
+        call mkdir(dir, 'p')
+        call pps#utils#apply_settings()
+        echo 'Directory ' . dir . ' created'
     else
-        if exists('b:pps_project_dir')
-            unlet b:pps_project_dir
-        endif
-
-        return 0
+        echo 'Directory ' . dir . ' already exists'
     endif
 endfunction
 

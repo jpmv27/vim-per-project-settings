@@ -1,8 +1,6 @@
-function pps#apply_settings(project) abort
-    let activate = pps#utils#set_project_dir(a:project)
+function pps#project_callback(project) abort
+    let b:pps_project_name = a:project
 
-    call pps#vimrc#configure(activate)
-    call pps#tags#configure(activate)
-    call pps#spell#configure(activate)
+    call pps#utils#apply_settings()
 endfunction
 
