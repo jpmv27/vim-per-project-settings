@@ -80,7 +80,27 @@ function pps#tags#update() abort
     endif
 endfunction
 
+function pps#tags#remove() abort
+    let dir = pps#utils#get_project_dir()
+    if (dir ==# '') || !isdirectory(dir)
+        return
+    endif
+
+    let tags = s:tags_file_path()
+    if (tags ==# '') || !filereadable(tags)
+        return
+    endif
+
+    if delete(tags) == 0
+        call pps#tags#configure(1)
+    endif
+endfunction
+
 function pps#tags#update_one() abort
+    if !get(b:, 'pps_tags_autoupdate', 1)
+        return
+    endif
+
     let tags = s:tags_file_path()
     if (tags ==# '') || !filereadable(tags)
         return
