@@ -21,7 +21,7 @@ function pps#utils#apply_settings() abort
 endfunction
 
 function pps#utils#make_project_dir() abort
-    let dir = pps#utils#get_project_dir() 
+    let dir = pps#utils#get_project_dir()
     if dir ==# ''
         return
     endif
@@ -32,6 +32,21 @@ function pps#utils#make_project_dir() abort
         echo 'Directory ' . dir . ' created'
     else
         echo 'Directory ' . dir . ' already exists'
+    endif
+endfunction
+
+function pps#utils#remove_project_dir() abort
+    let dir = pps#utils#get_project_dir()
+    if dir ==# ''
+        return
+    endif
+
+    if isdirectory(dir)
+        call delete(dir, 'rf')
+        call pps#utils#apply_settings()
+        echo 'Directory ' . dir . ' removed'
+    else
+        echo 'Directory ' . dir . " doesn't exists"
     endif
 endfunction
 

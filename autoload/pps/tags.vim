@@ -80,7 +80,7 @@ function pps#tags#update() abort
     endif
 endfunction
 
-function pps#tags#remove() abort
+function pps#tags#erase() abort
     let dir = pps#utils#get_project_dir()
     if (dir ==# '') || !isdirectory(dir)
         return
