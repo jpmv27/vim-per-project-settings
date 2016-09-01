@@ -1,4 +1,4 @@
-function s:spell_file_path() abort
+function! s:spell_file_path() abort
     let dir = pps#utils#get_project_dir()
     if dir ==# ''
         return ''
@@ -7,7 +7,7 @@ function s:spell_file_path() abort
     return dir . '/en.utf-8.add'
 endfunction
 
-function pps#spell#configure(active) abort
+function! pps#spell#configure(active) abort
     if !exists('g:pps_common_spellfile')
         return
     endif

@@ -1,4 +1,4 @@
-function s:vimrc_file_path() abort
+function! s:vimrc_file_path() abort
     let dir = pps#utils#get_project_dir()
     if dir ==# ''
         return ''
@@ -7,7 +7,7 @@ function s:vimrc_file_path() abort
     return dir . '/vimrc'
 endfunction
 
-function pps#vimrc#configure(active) abort
+function! pps#vimrc#configure(active) abort
     let active = a:active
 
     if active
@@ -23,7 +23,7 @@ function pps#vimrc#configure(active) abort
     endif
 endfunction
 
-function pps#vimrc#edit() abort
+function! pps#vimrc#edit() abort
     let dir = pps#utils#get_project_dir()
     if dir ==# ''
         return
