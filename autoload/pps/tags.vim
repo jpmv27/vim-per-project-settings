@@ -23,10 +23,8 @@ function! pps#tags#configure(active) abort
     endif
 
     if active
-        let b:tagmgr_tags_file = tags
         execute 'setlocal tags=' . tags
     else
-        let b:tagmgr_tags_file = ''
         setlocal tags=
     endif
 endfunction
