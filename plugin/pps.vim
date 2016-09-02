@@ -4,3 +4,7 @@ command! -nargs=0 PpsRmdir call pps#utils#remove_project_dir()
 
 command! -nargs=0 PpsVimrc call pps#vimrc#edit()
 
+function! PpsDir() abort
+    return pps#utils#get_project_dir()
+endfunction
+
