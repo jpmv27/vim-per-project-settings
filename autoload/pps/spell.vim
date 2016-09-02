@@ -4,14 +4,15 @@ function! s:spell_file_path() abort
         return ''
     endif
 
+    let dir = dir . '/spell'
+    if !isdirectory(dir)
+        return ''
+    endif
+
     return dir . '/en.utf-8.add'
 endfunction
 
 function! pps#spell#configure(active) abort
-    if !exists('g:pps_common_spellfile')
-        return
-    endif
-
     let active = a:active
 
     if active
@@ -22,9 +23,8 @@ function! pps#spell#configure(active) abort
     endif
 
     if active
-        execute 'setlocal spellfile=' . g:pps_common_spellfile . ',' . spell
+        execute 'setlocal spellfile=' . &spellfile . ',' . spell
     else
-        execute 'setlocal spellfile=' . g:pps_common_spellfile
     endif
 endfunction
 
