@@ -42,11 +42,17 @@ function! pps#spell#configure(active) abort
 endfunction
 
 function! pps#spell#make_dir() abort
-    let dir = s:spell_dir_path()
+    let dir = pps#utils#get_project_dir()
     if dir ==# ''
         return
     endif
 
+    if !isdirectory(dir)
+        echo 'You must create the project directory first'
+        return
+    endif
+
+    let dir = s:spell_dir_path()
     if !isdirectory(dir)
         call mkdir(dir, 'p')
         echo 'Directory ' . dir . ' created, refresh file to update settings'
@@ -56,11 +62,17 @@ function! pps#spell#make_dir() abort
 endfunction
 
 function! pps#spell#remove_dir() abort
-    let dir = s:spell_dir_path()
+    let dir = pps#utils#get_project_dir()
     if dir ==# ''
         return
     endif
 
+    if !isdirectory(dir)
+        echo 'No project directory'
+        return
+    endif
+
+    let dir = s:spell_dir_path()
     if isdirectory(dir)
         call delete(dir, 'rf')
         echo 'Directory ' . dir . ' removed, refresh file to update settings'
