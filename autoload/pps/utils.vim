@@ -54,3 +54,22 @@ function! pps#utils#remove_project_dir() abort
     endif
 endfunction
 
+function! pps#utils#edit(...) abort
+    let dir = pps#utils#get_project_dir()
+    if dir ==# ''
+        return
+    endif
+
+    if !isdirectory(dir)
+        echo 'You must create the project directory first'
+        return
+    endif
+
+    let file = dir
+    if a:0
+        let file = file . '/' . a:1
+    endif
+
+    execute 'split ' . file
+endfunction
+
