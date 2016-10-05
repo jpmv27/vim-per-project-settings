@@ -46,7 +46,7 @@ function! pps#utils#remove_project_dir() abort
         call pps#utils#apply_settings()
         echo 'Directory ' . dir . ' removed'
     else
-        echo 'Directory ' . dir . " doesn't exists"
+        echo 'Directory ' . dir . " doesn't exist"
     endif
 endfunction
 
