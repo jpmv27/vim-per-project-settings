@@ -73,3 +73,12 @@ function! pps#utils#edit(...) abort
     execute 'split ' . file
 endfunction
 
+function! pps#utils#edit_complete(ArgLead, CmdLine, CursorPos) abort
+    let dir = pps#utils#get_project_dir()
+    if dir ==# ''
+        return ''
+    endif
+
+    return system('find ' . dir . ' -maxdepth 1 -type f -printf "%P\n" | sort')
+endfunction
+
