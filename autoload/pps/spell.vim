@@ -16,6 +16,15 @@ function! s:spell_file_path() abort
     return dir . '/en.utf-8.add'
 endfunction
 
+function! pps#spell#init() abort
+    " Since spellfile is updated cumulatively, need to reset it to
+    " default before we add the per-project settings
+    augroup pps_spell
+        autocmd!
+        execute 'autocmd BufEnter * :setlocal spellfile=' . &spellfile
+    augroup END
+endfunction
+
 function! pps#spell#configure(active) abort
     let active = a:active
 

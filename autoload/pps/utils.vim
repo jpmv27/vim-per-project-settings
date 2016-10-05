@@ -20,6 +20,10 @@ function! pps#utils#apply_settings() abort
     call pps#spell#configure(active)
 endfunction
 
+function! pps#utils#init() abort
+    call pps#spell#init()
+endfunction
+
 function! pps#utils#make_project_dir() abort
     let dir = pps#utils#get_project_dir()
     if dir ==# ''
