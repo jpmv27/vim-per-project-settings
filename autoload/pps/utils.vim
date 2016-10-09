@@ -1,61 +1,89 @@
-function! pps#utils#get_project_dir() abort
+function! pps#utils#set_base_dir(dir) abort
+    let s:base_dir = a:dir
+endfunction
+
+function! pps#utils#get_project_dir(quiet) abort
     if !exists('b:pps_project_name')
-        echo 'Not in a project'
+        if !a:quiet
+            echo 'Not in a project'
+        endif
+
         return ''
     endif
 
-    if !exists('g:pps_base_dir')
-        echo 'You must define g:pps_base_dir'
+    if !exists('s:base_dir')
+        if !a:quiet
+            echo 'You must call PpsInit()'
+        endif
+
         return ''
     endif
 
-    return resolve(fnameescape(expand(g:pps_base_dir) . '/' . b:pps_project_name))
+    return resolve(fnameescape(expand(s:base_dir) . '/' . b:pps_project_name))
 endfunction
 
-function! pps#utils#apply_settings() abort
-    let active = (pps#utils#get_project_dir() !=# '')
-
-    call pps#vimrc#configure(active)
-    call pps#tags#configure(active)
-    call pps#spell#configure(active)
-endfunction
-
-function! pps#utils#init() abort
-    call pps#spell#init()
-endfunction
-
-function! pps#utils#make_project_dir() abort
-    let dir = pps#utils#get_project_dir()
+function! pps#utils#make_dir(...) abort
+    let dir = pps#utils#get_project_dir(0)
     if dir ==# ''
         return
     endif
 
-    if !isdirectory(dir)
-        call mkdir(dir, 'p')
-        call pps#utils#apply_settings()
-        echo 'Directory ' . dir . ' created'
+    if a:0 == 0
+        if !isdirectory(dir)
+            call mkdir(dir, 'p')
+            echo 'Project directory ' . dir . ' created'
+        else
+            echo 'Project directory ' . dir . ' already exists'
+        endif
     else
-        echo 'Directory ' . dir . ' already exists'
+        if !isdirectory(dir)
+            echo 'You must create the project directory first'
+            return
+        endif
+
+        let dir = dir . '/' . a:1
+
+        if !isdirectory(dir)
+            call mkdir(dir, 'p')
+            echo 'Directory ' . dir . ' created'
+        else
+            echo 'Directory ' . dir . ' already exists'
+        endif
     endif
 endfunction
 
-function! pps#utils#remove_project_dir() abort
-    let dir = pps#utils#get_project_dir()
+function! pps#utils#remove_dir(...) abort
+    let dir = pps#utils#get_project_dir(0)
     if dir ==# ''
         return
     endif
 
-    if isdirectory(dir)
-        call delete(dir, 'rf')
-        call pps#utils#apply_settings()
-        echo 'Directory ' . dir . ' removed'
+    if a:0 == 0
+        if isdirectory(dir)
+            call delete(dir, 'rf')
+            echo 'Project directory ' . dir . ' removed'
+        else
+            echo 'Project directory ' . dir . " doesn't exist"
+        endif
     else
-        echo 'Directory ' . dir . " doesn't exist"
+        if !isdirectory(dir)
+            echo 'No project directory'
+            return
+        endif
+
+        let dir = dir . '/' . a:1
+
+        if isdirectory(dir)
+            call delete(dir, 'rf')
+            echo 'Directory ' . dir . ' removed'
+        else
+            echo 'Directory ' . dir . " doesn't exist"
+        endif
     endif
 endfunction
 
-function! pps#utils#edit(...) abort
-    let dir = pps#utils#get_project_dir()
+function! pps#utils#edit_file(...) abort
+    let dir = pps#utils#get_project_dir(0)
     if dir ==# ''
         return
     endif
@@ -73,8 +101,38 @@ function! pps#utils#edit(...) abort
     execute 'split ' . file
 endfunction
 
-function! pps#utils#edit_complete(ArgLead, CmdLine, CursorPos) abort
-    let dir = pps#utils#get_project_dir()
+function! pps#utils#remove_file(...) abort
+    let dir = pps#utils#get_project_dir(0)
+    if dir ==# ''
+        return
+    endif
+
+    if !isdirectory(dir)
+        echo 'No project directory'
+        return
+    endif
+
+    let file = dir . '/' . a:1
+
+    if filereadable(file)
+        call delete(file)
+        echo 'File ' . file . ' deleted'
+    else
+        echo 'File ' . file . " doesn't exist"
+    endif
+endfunction
+
+function! pps#utils#dir_complete(ArgLead, CmdLine, CursorPos) abort
+    let dir = pps#utils#get_project_dir(1)
+    if dir ==# ''
+        return ''
+    endif
+
+    return system('find ' . dir . ' -mindepth 1 -maxdepth 1 -type d -printf "%P\n" | sort')
+endfunction
+
+function! pps#utils#file_complete(ArgLead, CmdLine, CursorPos) abort
+    let dir = pps#utils#get_project_dir(1)
     if dir ==# ''
         return ''
     endif

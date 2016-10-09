@@ -1,22 +1,14 @@
-command! -nargs=0 PpsMkdir call pps#utils#make_project_dir()
+command! -nargs=? PpsMkdir call pps#utils#make_dir(<f-args>)
 
-command! -nargs=0 PpsRmdir call pps#utils#remove_project_dir()
+command! -nargs=? -complete=custom,pps#utils#dir_complete PpsRmdir call pps#utils#remove_dir(<f-args>)
 
-command! -nargs=? -complete=custom,pps#utils#edit_complete PpsEdit call pps#utils#edit(<f-args>)
+command! -nargs=? -complete=custom,pps#utils#file_complete PpsEdit call pps#utils#edit_file(<f-args>)
+
+command! -nargs=1 -complete=custom,pps#utils#file_complete PpsDelete call pps#utils#remove_file(<f-args>)
 
 command! -nargs=0 PpsVimrc call pps#vimrc#edit()
-
-command! -nargs=0 PpsEgEdit call pps#easygrep#edit()
 
 command! -nargs=0 PpsEgApply call pps#easygrep#apply()
 
 command! -nargs=0 PpsEgReset call pps#easygrep#restore_defaults()
-
-command! -nargs=0 PpsSpellMkdir call pps#spell#make_dir()
-
-command! -nargs=0 PpsSpellRmdir call pps#spell#remove_dir()
-
-function! PpsDir() abort
-    return pps#utils#get_project_dir()
-endfunction
 

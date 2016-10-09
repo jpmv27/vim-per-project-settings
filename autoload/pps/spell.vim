@@ -1,15 +1,11 @@
-function! s:spell_dir_path() abort
-    let dir = pps#utils#get_project_dir()
+function! s:spell_file_path(subdir) abort
+    let dir = pps#utils#get_project_dir(1)
     if dir ==# ''
         return ''
     endif
 
-    return dir . '/spell'
-endfunction
-
-function! s:spell_file_path() abort
-    let dir = s:spell_dir_path()
-    if dir ==# '' || !isdirectory(dir)
+    let dir = dir . '/' . a:subdir
+    if !isdirectory(dir)
         return ''
     endif
 
@@ -17,67 +13,20 @@ function! s:spell_file_path() abort
 endfunction
 
 function! pps#spell#init() abort
-    " Since spellfile is updated cumulatively, need to reset it to
-    " default before we add the per-project settings
-    augroup pps_spell
-        autocmd!
-        execute 'autocmd BufEnter * :setlocal spellfile=' . &spellfile
-    augroup END
+    let s:default_spellfile = &spellfile
 endfunction
 
-function! pps#spell#configure(active) abort
-    let active = a:active
-
-    if active
-        let spell = s:spell_file_path()
-        if spell ==# ''
-            let active = 0
-        endif
-    endif
-
-    if active
-        execute 'setlocal spellfile=' . &spellfile . ',' . spell
-    else
-    endif
+function! pps#spell#reset() abort
+    execute 'setlocal spellfile=' . s:default_spellfile
 endfunction
 
-function! pps#spell#make_dir() abort
-    let dir = pps#utils#get_project_dir()
-    if dir ==# ''
+function! pps#spell#enable(subdir) abort
+    let spell = s:spell_file_path(a:subdir)
+    if spell ==# ''
+        echo 'Could not enable spell per-project settings'
         return
     endif
 
-    if !isdirectory(dir)
-        echo 'You must create the project directory first'
-        return
-    endif
-
-    let dir = s:spell_dir_path()
-    if !isdirectory(dir)
-        call mkdir(dir, 'p')
-        echo 'Directory ' . dir . ' created, refresh file to update settings'
-    else
-        echo 'Directory ' . dir . ' already exists'
-    endif
-endfunction
-
-function! pps#spell#remove_dir() abort
-    let dir = pps#utils#get_project_dir()
-    if dir ==# ''
-        return
-    endif
-
-    if !isdirectory(dir)
-        echo 'No project directory'
-        return
-    endif
-
-    let dir = s:spell_dir_path()
-    if isdirectory(dir)
-        call delete(dir, 'rf')
-        echo 'Directory ' . dir . ' removed, refresh file to update settings'
-    else
-        echo 'Directory ' . dir . " doesn't exist"
-    endif
+    execute 'setlocal spellfile=' . &spellfile . ',' . spell
 endfunction
 

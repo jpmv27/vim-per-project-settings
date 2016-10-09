@@ -1,5 +1,5 @@
-function! s:tags_file_path() abort
-    let dir = pps#utils#get_project_dir()
+function! s:tags_file_path(name) abort
+    let dir = pps#utils#get_project_dir(1)
     if dir ==# ''
         return ''
     endif
@@ -8,24 +8,17 @@ function! s:tags_file_path() abort
         return ''
     endif
 
-    return dir . '/tags'
+    return dir . '/' . a:name
 endfunction
 
-function! pps#tags#configure(active) abort
-    let active = a:active
+function! pps#tags#enable(name) abort
+    let tags = s:tags_file_path(a:name)
 
-    if active
-        let tags = s:tags_file_path()
-
-        if tags ==# ''
-            let active = 0
-        endif
+    if tags ==# ''
+        echo 'Could not enable tags per-project settings'
+        return
     endif
 
-    if active
-        execute 'setlocal tags=' . tags
-    else
-        setlocal tags=
-    endif
+    execute 'setlocal tags=' . tags
 endfunction
 

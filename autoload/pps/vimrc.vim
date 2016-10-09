@@ -1,5 +1,5 @@
 function! s:vimrc_file_path() abort
-    let dir = pps#utils#get_project_dir()
+    let dir = pps#utils#get_project_dir(1)
     if dir ==# ''
         return ''
     endif
@@ -7,24 +7,17 @@ function! s:vimrc_file_path() abort
     return dir . '/vimrc'
 endfunction
 
-function! pps#vimrc#configure(active) abort
-    let active = a:active
-
-    if active
-        let vimrc = s:vimrc_file_path()
-
-        if (vimrc ==# '') || !filereadable(vimrc)
-            let active = 0
-        endif
+function! pps#vimrc#apply() abort
+    let vimrc = s:vimrc_file_path()
+    if (vimrc ==# '') || !filereadable(vimrc)
+        return
     endif
 
-    if active
-        execute 'source' vimrc
-    endif
+    execute 'source' vimrc
 endfunction
 
 function! pps#vimrc#edit() abort
-    let dir = pps#utils#get_project_dir()
+    let dir = pps#utils#get_project_dir(0)
     if dir ==# ''
         return
     endif
