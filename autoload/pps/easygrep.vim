@@ -1,16 +1,3 @@
-function! s:easygrep_file_path(name) abort
-    let dir = pps#utils#get_project_dir(1)
-    if dir ==# ''
-        return ''
-    endif
-
-    if !isdirectory(dir)
-        return ''
-    endif
-
-    return dir . '/' . a:name
-endfunction
-
 function! s:save_settings(var) abort
     for [item, val] in items(g:)
         if match(item, 'EasyGrep[^_]') == 0
@@ -26,18 +13,9 @@ function! s:restore_settings(var) abort
     endfor
 endfunction
 
-function! pps#easygrep#enable(name) abort
-    let easygrep = s:easygrep_file_path(a:name)
-
-    if easygrep ==# '' || !filereadable(easygrep)
-        echo 'Could not enable easygrep per-project settings'
-        return
-    endif
-
+function! pps#easygrep#enable() abort
     let b:pps_eg_settings = {}
     call s:save_settings(b:pps_eg_settings)
-
-    execute 'source ' . easygrep
 
     augroup pps_eg
         autocmd!
