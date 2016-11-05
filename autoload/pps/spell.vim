@@ -27,6 +27,6 @@ function! pps#spell#enable(subdir) abort
         return
     endif
 
-    execute 'setlocal spellfile=' . &spellfile . ',' . spell
+    execute 'setlocal spellfile+=' . spell
 endfunction
 

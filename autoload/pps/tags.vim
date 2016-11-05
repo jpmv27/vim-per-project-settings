@@ -11,6 +11,22 @@ function! s:tags_file_path(name) abort
     return dir . '/' . a:name
 endfunction
 
+function! s:prepend_tags(name) abort
+    if &tags ==# ''
+        execute 'setlocal tags=' . a:name
+    else
+        execute 'setlocal tags=' . a:name . ',' . &tags
+    endif
+endfunction
+
+function! pps#tags#init() abort
+    let s:default_tags = &tags
+endfunction
+
+function! pps#tags#reset() abort
+    execute 'setlocal tags=' . s:default_tags
+endfunction
+
 function! pps#tags#enable(name) abort
     let tags = s:tags_file_path(a:name)
 
@@ -19,6 +35,16 @@ function! pps#tags#enable(name) abort
         return
     endif
 
-    execute 'setlocal tags=' . tags
+    call s:prepend_tags(tags)
 endfunction
 
+function! pps#tags#disable() abort
+    if !empty(split(&tags, ',', 1)[0])
+        call s:prepend_tags('')
+    endif
+endfunction
+
+function! pps#tags#ref_only(name) abort
+    " Need comma even if tags currently empty
+    execute 'setlocal tags=' . &tags . ',' . a:name
+endfunction

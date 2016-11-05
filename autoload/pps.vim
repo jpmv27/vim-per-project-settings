@@ -1,6 +1,7 @@
 function! pps#init(dir) abort
     call pps#utils#set_base_dir(a:dir)
     call pps#spell#init()
+    call pps#tags#init()
 
     augroup pps
         autocmd!
@@ -10,6 +11,7 @@ endfunction
 
 function! pps#reset() abort
     call pps#spell#reset()
+    call pps#tags#reset()
 endfunction
 
 function! pps#callback(project, is_leaf) abort
