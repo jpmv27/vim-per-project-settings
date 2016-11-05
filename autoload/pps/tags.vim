@@ -12,7 +12,7 @@ function! s:tags_file_path(name) abort
 endfunction
 
 function! s:prepend_tags(name) abort
-    if empty(split(&tags, ',', 1))[0]
+    if empty(split(&tags, ',', 1)[0])
         execute 'setlocal tags=' . a:name . &tags
     else
         execute 'setlocal tags=' . a:name . ',' . &tags
