@@ -17,6 +17,7 @@ function! pps#easygrep#enable() abort
     let b:pps_eg_settings = {}
     call s:save_settings(b:pps_eg_settings)
 
+    nmap <buffer> <leader>vo :echo '\vo is not supported when EasyGrep PPS is enabled'<cr>
     augroup pps_eg
         autocmd!
         autocmd BufLeave <buffer> call pps#easygrep#restore()
