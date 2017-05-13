@@ -30,13 +30,17 @@ function! pps#spell#reset() abort
 endfunction
 
 function! pps#spell#enable(subdir) abort
+    " Derive the name of the new file from the name of the main spell language, removing the region
     let spell = s:spell_file_path(a:subdir, split(split(&spelllang, ',')[0], '_')[0])
     if spell ==# ''
         echo 'Could not enable spell per-project settings'
         return
     endif
 
-    execute 'setlocal spellfile+=' . spell
+    " Insert new spell file immediately after main file
+    let files = split(&spellfile, ',')
+    call insert(files, spell, 1)
+    execute 'setlocal spellfile=' . join(files, ',')
 endfunction
 
 function! pps#spell#ref_only(subdir, name) abort
